@@ -1,4 +1,4 @@
-gamelabBBB
-==========
+gamelab
+=======
 
-similar implementation of pacman using LPD8806 but on beaglebone
+Implementing Pacman in Python using Raspberry Pi
