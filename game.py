@@ -151,54 +151,54 @@ class CGame:
 
 					if(jy_pos1_horizontal < 0 and int(self.data[self.indexPacMan]["left"]) != -1 ):
 						prev_pos = self.posPacMan
-				        	self.posPacMan = int(self.data[self.indexPacMan]["left"])
+				        	#self.posPacMan = int(self.data[self.indexPacMan]["left"])
 						self.direction_of_pacman = "left"
 						
 						#Set Off Pac-man's old position
-						self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
+						#self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
 
 						#Set Pac-man's new position
-						self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
+						#self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
 
 						#self.jump.play()
 				        elif(jy_pos1_horizontal > 0 and int(self.data[self.indexPacMan]["right"]) != -1 ):
 						prev_pos = self.posPacMan
-						self.posPacMan = int(self.data[self.indexPacMan]["right"])
+						#self.posPacMan = int(self.data[self.indexPacMan]["right"])
 						self.direction_of_pacman = "right"
 
 						#Set Off Pac-man's old position
-						self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
+						#self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
 
 						#Set Pac-man's new position
-						self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
+						#self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
 
 						#self.jump.play()
 					if(jy_pos1_vertical > 0 and int(self.data[self.indexPacMan]["down"]) != -1):
 						prev_pos = self.posPacMan
-						self.posPacMan = int(self.data[self.indexPacMan]["down"])
+						#self.posPacMan = int(self.data[self.indexPacMan]["down"])
 						self.direction_of_pacman = "down"
 
 						#Set Off Pac-man's old position
-						self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
+						#self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
 
 						#Set Pac-man's new position
-						self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
+						#self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
 
 						#self.jump.play()
 					elif(jy_pos1_vertical < 0 and int(self.data[self.indexPacMan]["up"]) != -1):
 						prev_pos = self.posPacMan
-						self.posPacMan = int(self.data[self.indexPacMan]["up"])
+						#self.posPacMan = int(self.data[self.indexPacMan]["up"])
 						self.direction_of_pacman = "up"
 
 						#Set Off Pac-man's old position
-						self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
+						#self.dbuffer.Set_Pixel(prev_pos, (255, 255, 255), 1)
 
 						#Set Pac-man's new position
-						self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
+						#self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
 
 						#self.jump.play()
 
-			self.indexPacMan = str(self.posPacMan)
+			#self.indexPacMan = str(self.posPacMan)
 
 
 			'''
