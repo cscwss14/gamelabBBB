@@ -1,11 +1,8 @@
 #from lib.bootstrap import *
 import boot.readConfig as init 
-import pygame
-import os
-import time, threadClass as tc
-import displayBuffer as dbuff
+from lib import threadClass as tc, displayBuffer as dbuff,astarBBB as astar
+import pygame, os,time
 import sys, getopt, threading
-import astarBBB as astar
 
 ENV_LED = 0
 ENV_DESKTOP = 1
