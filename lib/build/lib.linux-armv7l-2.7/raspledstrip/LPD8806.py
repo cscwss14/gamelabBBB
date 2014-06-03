@@ -10,17 +10,20 @@ class LPD8806(object):
             import spidev
             self.spi = spidev.SpiDev()
             self.spi.open(1,0)
-            self.spi.max_speed_hz = 16666660
+            self.spi.max_speed_hz = 16000000
             print 'py-spidev MHz: %d' % (self.spi.max_speed_hz / 1000000.0 )
         else:
             self.spi = open(self.dev, "wb")
 
     #Push new data to strand
     def update(self, buffer):
+	temp_buffer = []
         if self.use_py_spi:
             for x in range(self.leds):
-                self.spi.xfer2([i for i in buffer[x]])
-                
+		temp_buffer = temp_buffer + [i for i in buffer[x]]
+                #self.spi.xfer2([i for i in buffer[x]])
+
+            self.spi.xfer2(temp_buffer)    
             self.spi.xfer2([0x00,0x00,0x00]) #zero fill the last to prevent stray colors at the end
             self.spi.xfer2([0x00]) #once more with feeling - this helps :)
         else:
