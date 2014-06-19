@@ -329,7 +329,7 @@ class CGame:
 
 	
 	#this function will deal with the Artificial Ghost 
-	def aiGhost(self):
+	def aiGhost1(self):
 		while 1:
 			#Do only when game is RUNNING
 			if self.gameState == GameState.RUNNING:
@@ -354,11 +354,47 @@ class CGame:
 					#Set ghost's new position
 					self.posAIGhost1 = int(nextPosGhost1)
 					self.dbuffer.Set_Pixel(self.posAIGhost1, self.colorAIGhost1, 1)
+					 #Raj will check this
+                                        #if secondplayer is not active then use this
+                                        if self.secondPlayerActive == False:
+                                            path2 = self.aiPath.findPathAstar2(source_aighost2,destination)
+                                            nextPosGhost2 = path2[1]
+                                            #Set Off ghost's old position
+                                            self.dbuffer.Set_Pixel(self.posAIGhost2, (255, 255, 255), 1)
+
+                                            #Set ghost's new position
+                                            self.posAIGhost2 = int(nextPosGhost2)
+                                            self.dbuffer.Set_Pixel(self.posAIGhost2, self.colorAIGhost2, 1)
+
+					
+				#release a lock here
+				self.lock.release()
+				
+			#This delay should be similar to ledRunning function so as to keep the speed constant
+			time.sleep(0.5)
+
+	#this function will deal with the Artificial Ghost 2
+	def aiGhost2(self):
+		while 1:
+			#Do only when game is RUNNING
+			if self.gameState == GameState.RUNNING:
+				self.lock.acquire()
+				
+				destination = str(self.posPacMan)
+				source_aighost2 = str(self.posAIGhost2)
+				
+				#Calculate only if the source and destination are different
+				if  source_aighost2 !=destination:
+				
+					#This takes only string, so converted to string
 					
 					#Raj will check this
 					#if secondplayer is not active then use this
 					if self.secondPlayerActive == False:	
-					    path2 = self.aiPath.findPathAstar2(source_aighost2,destination)				
+					    print "source, destinatiion",source_aighost2, destination 
+					    #path2 = self.aiPath.findPathAstar2(source_aighost2,destination)
+					    path2 = self.aiPath.findPathAstar2(source_aighost2,destination)
+					    print "path2",path2
 					    nextPosGhost2 = path2[1]
 					    #Set Off ghost's old position
 					    self.dbuffer.Set_Pixel(self.posAIGhost2, (255, 255, 255), 1)
@@ -366,14 +402,11 @@ class CGame:
 					    #Set ghost's new position
 					    self.posAIGhost2 = int(nextPosGhost2)
 					    self.dbuffer.Set_Pixel(self.posAIGhost2, self.colorAIGhost2, 1)
-					
 
 				#release a lock here
 				self.lock.release()
 				
 			#This delay should be similar to ledRunning function so as to keep the speed constant
-			time.sleep(0.5)
-
 
 if __name__ == '__main__':
 	app = CGame(environment)
@@ -381,17 +414,19 @@ if __name__ == '__main__':
 	#Create threads
 	refreshWin = threading.Thread(target = app.ledRunningFunc, args = [])
 	threadMain = threading.Thread(target = app.main, args = [])
-	threadAIGhost = threading.Thread(target=app.aiGhost , args=[])
-	
+	threadAIGhost1 = threading.Thread(target=app.aiGhost1 , args=[])
+	#threadAIGhost2 = threading.Thread(target=app.aiGhost2,args=[])	
 	#Start threads
 	threadMain.start()
-	threadAIGhost.start()
+	threadAIGhost1.start()
+	#threadAIGhost2.start()
 	refreshWin.start()
 	
 	if(app.environment == Environment.ENV_DESKTOP):
 		app.dbuffer.Start_Flushing()
 	else:
 		threadMain.join()
-		threadAIGhost.join()
+		threadAIGhost1.join()
+		#threadAIGhost2.join()
 		refreshWin.join()
 		

@@ -15,7 +15,7 @@ def config():
         with open('data.json') as data_file:
                 data = json.load(data_file)
         return data
-''' 
+'''
   
 class CFindPath:
     
@@ -46,12 +46,13 @@ class CFindPath:
 
     #A* with 4th position indexed
     def findPathAstar2(self,source,destination):
-	print "destination", destination
+	print "destination",destination
 	for i in range(0,4):
 	    key = [k for k,v in self.data[destination].items()if v!= "-1" and k != "x" and k!="y" and k!="type"]
 	    index = random.randrange(0,len(key))
 	    destination = self.data[destination][key[index]]
-	    print "destination", destination
+	
+	print "destination",destination
 	path = nx.astar_path(self.G,source,destination,self.heuristics2)
 	return path
 
@@ -85,7 +86,7 @@ test = CFindPath(data)
 for i in range(0,10):
 	path = test.findPathAstar2("164","123")
 	print path
-	path = test.findPathDijkstra("164","123")
-	print path
+#	path = test.findPathDijkstra("164","123")
+#	print path
 
 '''
