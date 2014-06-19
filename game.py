@@ -61,6 +61,7 @@ class CGame:
 		self.gameState = GameState.NOT_STARTED
 
 		self.environment = environment
+		self.secondPlayerActive= True
 
 		self.twoJSPresent = False
 		self.lock = threading.Lock()
@@ -120,6 +121,8 @@ class CGame:
 				self.posPacMan = int(key)
 				self.indexPacMan = str(self.posPacMan)
 			elif(self.data[key]["type"] == "G"):
+				#if second joystick is active treat this as a coin, dont confuse with, if 2nd joystick present
+				#it should be active, raj will set the variable,self.secondPlayerActive
 				self.dbuffer.Set_Pixel(int(key), self.colorGhost , 1)
 				self.posGhost = int(key)
 				self.indexGhost = str(self.posGhost)
@@ -128,9 +131,11 @@ class CGame:
 				self.posAIGhost1 = int(key)
 				self.indexAIGhost = str(self.posAIGhost1)
 			elif(self.data[key]["type"] == "AI2"):
-				self.dbuffer.Set_Pixel(int(key), self.colorAIGhost2 , 1)
-				self.posAIGhost2 = int(key)
-				self.indexAIGhost = str(self.posAIGhost2)
+				#if second joystick is inactive use this
+				if not self.secondPlayerActive:
+				    self.dbuffer.Set_Pixel(int(key), self.colorAIGhost2 , 1)
+				    self.posAIGhost2 = int(key)
+				    self.indexAIGhost = str(self.posAIGhost2)
 			elif(self.data[key]["type"] == "C"):
 				self.dbuffer.Set_Pixel(int(key), self.colorCoins , 1)		
 
@@ -210,7 +215,8 @@ class CGame:
 						jy_pos1_horizontal = self.Joystick1.get_axis(0)
 						jy_pos1_vertical = self.Joystick1.get_axis(1)
 					
-						if (self.twoJSPresent == True):
+						#Raj will check this
+						if (self.twoJSPresent == True and self.secondPlayerActive == True):
 							#Joystick2 position
 							jy_pos2_horizontal = self.Joystick2.get_axis(0)
 							jy_pos2_vertical = self.Joystick2.get_axis(1)
@@ -304,8 +310,8 @@ class CGame:
 
 					#Set Pac-man's new position
 					self.dbuffer.Set_Pixel(self.posPacMan, self.colorPacMan, 1)
-				
-				if (self.twoJSPresent == True):
+				#Raj will check this also
+				if (self.twoJSPresent == True and self.secondPlayerActive == True):
 					prev_pos = self.posGhost
 					if (int(self.data[self.indexGhost][self.direction_of_ghost]) != -1):
 						self.posGhost = int(self.data[self.indexGhost][self.direction_of_ghost])
@@ -349,16 +355,17 @@ class CGame:
 					self.posAIGhost1 = int(nextPosGhost1)
 					self.dbuffer.Set_Pixel(self.posAIGhost1, self.colorAIGhost1, 1)
 					
-					
-					path2 = self.aiPath.findPathAstar2(source_aighost2,destination)				
-					print "path----",path2
-					nextPosGhost2 = path2[1]
-					#Set Off ghost's old position
-					self.dbuffer.Set_Pixel(self.posAIGhost2, (255, 255, 255), 1)
+					#Raj will check this
+					#if secondplayer is not active then use this
+					if self.secondPlayerActive == False:	
+					    path2 = self.aiPath.findPathAstar2(source_aighost2,destination)				
+					    nextPosGhost2 = path2[1]
+					    #Set Off ghost's old position
+					    self.dbuffer.Set_Pixel(self.posAIGhost2, (255, 255, 255), 1)
 				
-					#Set ghost's new position
-					self.posAIGhost2 = int(nextPosGhost2)
-					self.dbuffer.Set_Pixel(self.posAIGhost2, self.colorAIGhost2, 1)
+					    #Set ghost's new position
+					    self.posAIGhost2 = int(nextPosGhost2)
+					    self.dbuffer.Set_Pixel(self.posAIGhost2, self.colorAIGhost2, 1)
 					
 
 				#release a lock here
