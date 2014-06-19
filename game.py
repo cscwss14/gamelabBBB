@@ -61,7 +61,7 @@ class CGame:
 		self.gameState = GameState.NOT_STARTED
 
 		self.environment = environment
-		self.secondPlayerActive= True
+		self.secondPlayerActive= False
 
 		self.twoJSPresent = False
 		self.lock = threading.Lock()
@@ -132,7 +132,7 @@ class CGame:
 				self.indexAIGhost = str(self.posAIGhost1)
 			elif(self.data[key]["type"] == "AI2"):
 				#if second joystick is inactive use this
-				if not self.secondPlayerActive:
+				if  self.secondPlayerActive == False:
 				    self.dbuffer.Set_Pixel(int(key), self.colorAIGhost2 , 1)
 				    self.posAIGhost2 = int(key)
 				    self.indexAIGhost = str(self.posAIGhost2)
