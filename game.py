@@ -70,9 +70,7 @@ class CGame:
 		self.aiPath = pf.CFindPath(self.data)	
 	
 		#call this function again to reset this dictionary
-		#self.scoreDict ={} 
 		self.scoreDict = self.aiPath.getNewScoreDict()
-		print self.scoreDict
 		
 
 		#pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
