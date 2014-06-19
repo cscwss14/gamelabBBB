@@ -44,7 +44,7 @@ class CGame:
 		self.posAIGhost2 = "80"
 
 		self.indexPacMan = str(self.posPacMan)
-		self.indexGhost1 = str(self.posGhost)
+		self.indexGhost = str(self.posGhost)
 
 		#initial direction
 		self.direction_of_pacman = "up"	
@@ -119,7 +119,7 @@ class CGame:
 			elif(self.data[key]["type"] == "G"):
 				self.dbuffer.Set_Pixel(int(key), self.colorGhost , 1)
 				self.posGhost = int(key)
-				self.indexGhost1 = str(self.posGhost)
+				self.indexGhost = str(self.posGhost)
 			elif(self.data[key]["type"] == "AI1"):
 				self.dbuffer.Set_Pixel(int(key), self.colorAIGhost1 , 1)
 				self.posAIGhost1 = int(key)
@@ -134,7 +134,7 @@ class CGame:
 
 	def main(self):		
 		prev_posPacman = self.posPacMan
-		prev_posGhost1  = self.posGhost
+		prev_posGhost  = self.posGhost
 		quit = False
 
 		clock = pygame.time.Clock()
@@ -167,12 +167,12 @@ class CGame:
 						#Flash the Pac Man and Ghost 5 times
 						for i in range(0,5):
 							self.dbuffer.Set_Pixel(self.indexPacMan, (255, 255, 255), 1)
-							self.dbuffer.Set_Pixel(self.indexGhost1, (255, 255, 255), 1)
+							self.dbuffer.Set_Pixel(self.indexGhost, (255, 255, 255), 1)
 							self.dbuffer.Set_Pixel(self.posAIGhost1, (255, 255, 255), 1) 
 							self.dbuffer.Set_Pixel(self.posAIGhost2, (255, 255, 255), 1) 
 							time.sleep(1)
 							self.dbuffer.Set_Pixel(self.indexPacMan, self.colorPacMan, 1)
-							self.dbuffer.Set_Pixel(self.indexGhost1, self.colorGhost, 1)
+							self.dbuffer.Set_Pixel(self.indexGhost, self.colorGhost, 1)
 							self.dbuffer.Set_Pixel(self.posAIGhost1, self.colorAIGhost1, 1)
 							self.dbuffer.Set_Pixel(self.posAIGhost2, self.colorAIGhost2, 1)
 							time.sleep(1)
@@ -234,7 +234,6 @@ class CGame:
 							self.direction_of_pacman = "up"
 							#self.jump.play()
 
-							#self.indexPacMan = str(self.posPacMan)
 
 
 			'''
@@ -252,55 +251,34 @@ class CGame:
 
 	def handleJoystickTwo(self,jy_pos2_horizontal,jy_pos2_vertical):					
 			 
-  		if(jy_pos2_horizontal < 0 and int(self.data[self.indexGhost1]["left"]) != -1 ):
+  		if(jy_pos2_horizontal < 0 and int(self.data[self.indexGhost]["left"]) != -1 ):
 			print "left pressed"
 			print "self.posGhost",self.posGhost					
-			prev_posGhost1 = self.posGhost
-	       		self.posGhost = int(self.data[self.indexGhost1]["left"])
+			prev_posGhost = self.posGhost
 			
 			self.direction_of_ghost = "left"
 				
-			#Set Off Ghost's old position
-			self.dbuffer.Set_Pixel(prev_posGhost1, (255, 255, 255), 1)
-			#Set Ghost's new position
-			self.dbuffer.Set_Pixel(self.posGhost, self.colorGhost, 1)
 		
-		elif(jy_pos2_horizontal > 0 and int(self.data[self.indexGhost1]["right"]) != -1 ):
+		elif(jy_pos2_horizontal > 0 and int(self.data[self.indexGhost]["right"]) != -1 ):
 			print "right pressed"
 			print "self.posGhost",self.posGhost					
-			prev_posGhost1 = self.posGhost
-			self.posGhost = int(self.data[self.indexGhost1]["right"])
+			prev_posGhost = self.posGhost
 			self.direction_of_ghost = "right"
-			#Set Ghost's old position
-			self.dbuffer.Set_Pixel(prev_posGhost1, (255, 255, 255), 1)
-			#Set Ghost's new position
-			self.dbuffer.Set_Pixel(self.posGhost, self.colorGhost, 1)
 
 						
-		if(jy_pos2_vertical > 0 and int(self.data[self.indexGhost1]["down"]) != -1):
+		if(jy_pos2_vertical > 0 and int(self.data[self.indexGhost]["down"]) != -1):
 			print "down pressed"
 			print "self.posGhost",self.posGhost					
-			prev_posGhost1 = self.posGhost
-			self.posGhost = int(self.data[self.indexGhost1]["down"])
+			prev_posGhost = self.posGhost
 			self.direction_of_ghost = "down"
-			#Set Ghost's old position
-			self.dbuffer.Set_Pixel(prev_posGhost1, (255, 255, 255), 1)
-			#Set Ghost's new position
-			self.dbuffer.Set_Pixel(self.posGhost, self.colorGhost, 1)
 
 						
-		elif(jy_pos2_vertical < 0 and int(self.data[self.indexGhost1]["up"]) != -1):
+		elif(jy_pos2_vertical < 0 and int(self.data[self.indexGhost]["up"]) != -1):
 			print "up pressed"
 			print "self.posGhost",self.posGhost					
-			prev_posGhost1 = self.posGhost
-			self.posGhost = int(self.data[self.indexGhost1]["up"])
+			prev_posGhost = self.posGhost
 			self.direction_of_ghost = "up"
-			#Set Off Ghost's old position
-			self.dbuffer.Set_Pixel(prev_posGhost1, (255, 255, 255), 1)
-			#Set Ghost's new position
-			self.dbuffer.Set_Pixel(self.posGhost, self.colorGhost, 1)
 	
-		#self.indexGhost1 = str(self.posGhost)
 
 
 
@@ -326,9 +304,9 @@ class CGame:
 				
 				if (self.twoJSPresent == True):
 					prev_pos = self.posGhost
-					if (int(self.data[self.indexGhost1][self.direction_of_ghost]) != -1):
-						self.posGhost = int(self.data[self.indexGhost1][self.direction_of_ghost])
-						self.indexGhost1 = str(self.posGhost)
+					if (int(self.data[self.indexGhost][self.direction_of_ghost]) != -1):
+						self.posGhost = int(self.data[self.indexGhost][self.direction_of_ghost])
+						self.indexGhost = str(self.posGhost)
 					
 					
 						#Set Off Ghost's old position
