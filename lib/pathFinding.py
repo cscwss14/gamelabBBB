@@ -8,7 +8,7 @@ import json
 #import math
 import networkx as nx
 #import matplotlib.pyplot as plt
-import random
+import random,copy
 
 '''
 def config():
@@ -26,12 +26,18 @@ class CFindPath:
     	for k, v in data.items():
 		i = int(data[k]["x"])
 		j = int(data[k]["y"])
-        	self.G.add_node(k,pos=(i,j))
+        	self.G.add_node(k,pos=(i,j),visited=False)
         	for key,value in v.items():
             		if  value != "-1" and key!="x" and key!="y" and key!="type":        
                			self.G.add_edge(k,value,weight=1)  
 	self.pos=nx.get_node_attributes(self.G,'pos')
+       	
 	self.flip = 1
+    
+    #using this to mark nodes as visited
+    def getNewScoreDict(self):
+	return	nx.get_node_attributes(self.G,'visited')
+
 
     #A* path finding
     def findPathAstar1(self,source,destination):

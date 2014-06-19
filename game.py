@@ -68,7 +68,12 @@ class CGame:
 		#Initialize the display buffer
 		self.dbuffer = dbuff.Display_Buffer(self.environment, self.data)
 		self.aiPath = pf.CFindPath(self.data)	
-
+	
+		#call this function again to reset this dictionary
+		#self.scoreDict ={} 
+		self.scoreDict = self.aiPath.getNewScoreDict()
+		print self.scoreDict
+		
 
 		#pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
 		#pygame.init()                              #initialize pygame
@@ -367,7 +372,7 @@ class CGame:
 
 if __name__ == '__main__':
 	app = CGame(environment)
-	
+	#print app.scoreDict	
 	#Create threads
 	refreshWin = threading.Thread(target = app.ledRunningFunc, args = [])
 	threadMain = threading.Thread(target = app.main, args = [])
