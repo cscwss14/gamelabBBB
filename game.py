@@ -80,6 +80,8 @@ class CGame:
 		#Initialize the display buffer
 		self.dbuffer = dbuff.Display_Buffer(self.environment, self.data)
 		self.aiPath = pf.CFindPath(self.data)	
+		#after every 3 seconds the aggressive ghost will scatter
+		self.scatterTime = 0
 	
 		#call this function again to reset this dictionary
 		self.scoreDict = self.aiPath.getNewScoreDict()
@@ -131,6 +133,8 @@ class CGame:
 				self.dbuffer.setPixel(int(key), self.colorPacMan , 1, self.intensityPacMan)
 				self.posPacMan = int(key)
 				self.indexPacMan = str(self.posPacMan)
+				#since this is player, remove this entry from score calculation dictionary
+				#TODO:
 			elif(self.data[key]["type"] == "G"):
 				#if second joystick is active treat this as a coin, dont confuse with, if 2nd joystick present
 				#it should be active, raj will set the variable,self.secondPlayerActive
@@ -140,8 +144,6 @@ class CGame:
 				    self.indexGhost = str(self.posGhost)
 				else:
 				    self.dbuffer.setPixel(int(key), self.colorCoins , 1, self.intensityCoins)
-				    #update this entry as a coin, in the scoring dictionary
-				    self.scoreDict.update({key:False})	
 
 			elif(self.data[key]["type"] == "AI1"):
 				self.dbuffer.setPixel(int(key), self.colorAIGhost1 , 1, self.intensityAIGhost)
@@ -155,8 +157,6 @@ class CGame:
 				    self.indexAIGhost = str(self.posAIGhost2)
 				else:
 				    self.dbuffer.setPixel(int(key), self.colorCoins , 1, self.intensityCoins)
-				    #update this entry as a coin, in the scoring dictionary
-				    self.scoreDict.update({key:False})	
 			
 			elif(self.data[key]["type"] == "AI3"):
 				    self.dbuffer.setPixel(int(key), self.colorAIGhost3 , 1, self.intensityAIGhost)
@@ -223,15 +223,15 @@ class CGame:
 							#if second joystick is present, then wait for the second player (ghost) to start the game
 							if self.twoJSPresent == True:
 								attempt = 1
-								max_no_of_attempts = 3 
+								max_no_of_attempts = 5 
 								found = False
 
 								while attempt <= max_no_of_attempts and found == False:
-									print "Inside While", attempt
+									print "---------------Inside While-----------", attempt
 					
 									for inner_event in pygame.event.get():
 
-										print "Inner Event Attempt", attempt
+										print "-----Inner Event Attempt-----", attempt
 										if inner_event.type == pygame.JOYBUTTONDOWN and inner_event.button == 1 and inner_event.joy != event.joy:
 											print "Second Player also started"
 											#Set the joystick instance of Ghost
@@ -409,31 +409,18 @@ class CGame:
 	def handleJoystickTwo(self,jy_pos2_horizontal,jy_pos2_vertical):					
 			 
   		if(jy_pos2_horizontal < 0 and int(self.data[self.indexGhost]["left"]) != -1 ):
-			print "left pressed"
-			print "self.posGhost",self.posGhost					
-			prev_posGhost = self.posGhost
-			
 			self.direction_of_ghost = "left"
 				
 		
 		elif(jy_pos2_horizontal > 0 and int(self.data[self.indexGhost]["right"]) != -1 ):
-			print "right pressed"
-			print "self.posGhost",self.posGhost					
-			prev_posGhost = self.posGhost
 			self.direction_of_ghost = "right"
 
 						
 		if(jy_pos2_vertical > 0 and int(self.data[self.indexGhost]["down"]) != -1):
-			print "down pressed"
-			print "self.posGhost",self.posGhost					
-			prev_posGhost = self.posGhost
 			self.direction_of_ghost = "down"
 
 						
 		elif(jy_pos2_vertical < 0 and int(self.data[self.indexGhost]["up"]) != -1):
-			print "up pressed"
-			print "self.posGhost",self.posGhost					
-			prev_posGhost = self.posGhost
 			self.direction_of_ghost = "up"
 	
 
@@ -444,18 +431,11 @@ class CGame:
 		
 		while 1:
 			print "LED Running Function"		
+			self.lock.acquire()
 			#Do only when game is RUNNING
 			if self.gameState == GameState.RUNNING:
-				if(self.pacmanWon() == True):
-                                	print "------------Pacman Won------------"
-                                        #Make all leds yellow from down to top
-                                        #time.sleep(1)
-                                        #Turn off all leds
-                                        #release the lock here and return from here ?
 				
-				self.lock.acquire()
 				prev_pos = self.posPacMan
-				print "prev_pos",self.posPacMan
 				if (int(self.data[self.indexPacMan][self.direction_of_pacman]) != -1):
 					#Mark this position visited, if not already visited and decrease the number of counts
                                         index = str(prev_pos)	
@@ -477,23 +457,42 @@ class CGame:
 					#self.chomp.play()
 				#Raj will check this also
 				if (self.twoJSPresent == True and self.secondPlayerActive == True):
-					prev_pos = self.posGhost
+					prev_posGhost = self.posGhost
 					if (int(self.data[self.indexGhost][self.direction_of_ghost]) != -1):
 						self.posGhost = int(self.data[self.indexGhost][self.direction_of_ghost])
 						self.indexGhost = str(self.posGhost)
 					
 					
 						#Set Off Ghost's old position
-						self.dbuffer.setPixel(prev_pos, (255, 255, 255), 1, self.intensityGhost)
+						self.dbuffer.setPixel(prev_posGhost, (255, 255, 255), 1, self.intensityGhost)
 
 						#Set Ghost's new position
 						self.dbuffer.setPixel(self.posGhost, self.colorGhost, 1, self.intensityGhost)
 
 						#Play the sound
 						#self.chomp.play()
-				
-				#self.aiGhost()		
-				self.lock.release()
+				if(self.pacmanWon() == True):
+                                        print "------------Pacman Won------------"
+                                        #Make all leds yellow from down to top
+					keys = self.data.keys()
+					for key in keys:
+						self.dbuffer.setPixel(int(key), (255, 255, 0), 1, 0.5)                                       
+ 
+					time.sleep(1)
+                                        
+					#Turn off all leds
+                                        self.reset_game()
+                                        for key in keys:
+                                        	self.dbuffer.setPixel(int(key), (255, 0, 0) , 0)
+					
+					#Change the game state to STOPPED
+					self.gameState = GameState.STOPPED	
+			
+			self.scatterTime +=1	
+			if(self.scatterTime == 5):
+				self.scatterTime = 0
+				self.aiPath.scatterMode = True
+			self.lock.release()
 				
 			time.sleep(0.5)
 
@@ -516,16 +515,10 @@ class CGame:
 	#this function will deal with the Artificial Ghost 
 	def aiGhost1(self):
 		while 1:
+			self.lock.acquire()
 			#Do only when game is RUNNING
 			if self.gameState == GameState.RUNNING:
-	                        if (self.pacmanLost() == True):
-                                	print "-----------Pacman Lost-----------------"
-                                       	#Make all leds red from down to top
-                                       	#time.sleep(1)
-                                       	#Turn off all leds
-                                       	#release the lock here and return from here
 
-				self.lock.acquire()
 				
 				destination = str(self.posPacMan)
 				source_aighost1 = str(self.posAIGhost1)
@@ -535,12 +528,13 @@ class CGame:
 				#Calculate only if the source and destination are different
 				#TODO : This condition is really not needed here after implementing termination situation: DISCUSS
 				if source_aighost1 != destination and source_aighost2 !=destination and source_aighost3 !=destination:
-				
+					
+						
 					#This takes only string, so converted to string
 					
 					path1 = self.aiPath.findPathAstar1(source_aighost1, destination)
 					#assign index 1 to the nextPosition of ghost as path[0] is the source iteself
-					nextPosGhost1 = path1[1]
+					nextPosGhost1 = path1
 				
 					#Set Off ghost's old position
 					self.dbuffer.setPixel(self.posAIGhost1, (255, 255, 255), 1, self.intensityAIGhost)
@@ -552,18 +546,18 @@ class CGame:
                                         #if secondplayer is not active then use this
                                         if self.secondPlayerActive == False:
                                             path2 = self.aiPath.findPathAstar2(source_aighost2,destination)
-					    print "path2", path2
-                                            nextPosGhost2 = path2[1]
+                                            print "path2", path2
+					    nextPosGhost2 = path2
                                             #Set Off ghost's old position
                                             self.dbuffer.setPixel(self.posAIGhost2, (255, 255, 255), 1, self.intensityAIGhost)
 
                                             #Set ghost's new position
                                             self.posAIGhost2 = int(nextPosGhost2)
                                             self.dbuffer.setPixel(self.posAIGhost2, self.colorAIGhost2, 1, self.intensityAIGhost)
-
+					
 					path3 = self.aiPath.findPathScattered(source_aighost3, destination)
 					#assign index 1 to the nextPosition of ghost as path[0] is the source iteself
-					nextPosGhost3 = path3[1]
+					nextPosGhost3 = path3
 				
 					#Set Off ghost's old position
 					self.dbuffer.setPixel(self.posAIGhost3, (255, 255, 255), 1, self.intensityAIGhost)
@@ -576,10 +570,24 @@ class CGame:
 					#Play the sound
 					#self.chomp.play()
 
-					
-				#release a lock here
-				self.lock.release()
-				
+			        if(self.pacmanLost() == True):
+                                        	#Make all leds red from down to top
+                                		keys = self.data.keys()
+                                        	for key in keys:
+                                                	self.dbuffer.setPixel(int(key), (255, 0, 0), 1, 0.5)                         
+
+                                        	time.sleep(1)
+
+                                        	#Turn off all leds
+                                        	self.reset_game()
+                                        	for key in keys:
+                                                	self.dbuffer.setPixel(int(key), (255, 0, 0) , 0)
+
+                                        	#Change the game state to STOPPED
+                                        	self.gameState = GameState.STOPPED		
+		
+			#release a lock here
+			self.lock.release()
 			#This delay should be similar to ledRunning function so as to keep the speed constant
 			time.sleep(0.5)
 
@@ -602,4 +610,4 @@ if __name__ == '__main__':
 		app.dbuffer.startFlushing()
 	else:
 		threadMain.join()
-
+	
