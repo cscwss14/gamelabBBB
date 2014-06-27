@@ -370,7 +370,7 @@ class CGame:
 				#Track the PacMan and Ghost only if the game is RUNNING
 				if self.gameState == GameState.RUNNING:
 					if event.type == pygame.JOYAXISMOTION:
-						print("Axis Moved...")
+						#print("Axis Moved...")
 						#Joystick1 position
 						jy_pos1_horizontal = self.pacManJoystick.get_axis(0)
 						jy_pos1_vertical = self.pacManJoystick.get_axis(1)
@@ -430,7 +430,7 @@ class CGame:
 	def ledRunningFunc(self):
 		
 		while 1:
-			print "LED Running Function"		
+			#print "LED Running Function"		
 			self.lock.acquire()
 			#Do only when game is RUNNING
 			if self.gameState == GameState.RUNNING:
@@ -487,11 +487,17 @@ class CGame:
 					
 					#Change the game state to STOPPED
 					self.gameState = GameState.STOPPED	
-			
-			self.scatterTime +=1	
-			if(self.scatterTime == 5):
-				self.scatterTime = 0
-				self.aiPath.scatterMode = True
+
+			#if the numOfCoins decreases to lesser than 100 activate the aggressive chase 	
+			if(self.numOfCoins > 50):	
+				if(self.scatterTime < 5 ):
+					self.scatterTime +=1
+				else:	
+					self.scatterTime = 0
+					self.aiPath.scatterMode = not self.aiPath.scatterMode
+			else:
+				self.aiPath.scatterMode = False
+
 			self.lock.release()
 				
 			time.sleep(0.5)
@@ -499,7 +505,7 @@ class CGame:
 	
 	def pacmanWon(self):
         #This function simply checks the current number of coins to collect as of now and decides the winner"""
-		print "------number of coins-----",self.numOfCoins
+		#print "------number of coins-----",self.numOfCoins
 		if (self.numOfCoins == 0):
                 	return True
 
@@ -509,6 +515,8 @@ class CGame:
                        return True
                 #if second player is inactive then check if second player's
                 if (self.secondPlayerActive == False and self.posAIGhost2 == self.posPacMan):
+                       return True
+                if(self.posAIGhost3 == self.posPacMan):
                        return True
 
 	
@@ -528,14 +536,9 @@ class CGame:
 				#Calculate only if the source and destination are different
 				#TODO : This condition is really not needed here after implementing termination situation: DISCUSS
 				if source_aighost1 != destination and source_aighost2 !=destination and source_aighost3 !=destination:
-					
 						
-					#This takes only string, so converted to string
-					
-					path1 = self.aiPath.findPathAstar1(source_aighost1, destination)
-					#assign index 1 to the nextPosition of ghost as path[0] is the source iteself
-					nextPosGhost1 = path1
-				
+						
+					nextPosGhost1 = self.aiPath.findPathAstar1(source_aighost1, destination)	
 					#Set Off ghost's old position
 					self.dbuffer.setPixel(self.posAIGhost1, (255, 255, 255), 1, self.intensityAIGhost)
 				
@@ -545,9 +548,7 @@ class CGame:
 
                                         #if secondplayer is not active then use this
                                         if self.secondPlayerActive == False:
-                                            path2 = self.aiPath.findPathAstar2(source_aighost2,destination)
-                                            print "path2", path2
-					    nextPosGhost2 = path2
+					    nextPosGhost2 = self.aiPath.findPathAstar2(source_aighost2,destination)
                                             #Set Off ghost's old position
                                             self.dbuffer.setPixel(self.posAIGhost2, (255, 255, 255), 1, self.intensityAIGhost)
 
@@ -555,10 +556,8 @@ class CGame:
                                             self.posAIGhost2 = int(nextPosGhost2)
                                             self.dbuffer.setPixel(self.posAIGhost2, self.colorAIGhost2, 1, self.intensityAIGhost)
 					
-					path3 = self.aiPath.findPathScattered(source_aighost3, destination)
-					#assign index 1 to the nextPosition of ghost as path[0] is the source iteself
-					nextPosGhost3 = path3
-				
+
+					nextPosGhost3 = self.aiPath.findPathScattered(source_aighost3, destination)
 					#Set Off ghost's old position
 					self.dbuffer.setPixel(self.posAIGhost3, (255, 255, 255), 1, self.intensityAIGhost)
 				
