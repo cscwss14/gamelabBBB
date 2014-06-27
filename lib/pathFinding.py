@@ -16,6 +16,8 @@ def config():
                 data = json.load(data_file)
         return data
 '''
+
+
 MAX_NODE_LOOKUP = 13  
 class CFindPath:
     
@@ -52,7 +54,6 @@ class CFindPath:
 	    #check scatter mode, change the destination and set scatterMode to false again
 	    if (self.scatterMode == True):
 		print "---------------in scatter mode-------------------------------"
-		self.scatterMode = False
 	        destination = self.corners[random.randrange(0,4)]
 	    	
 	
@@ -66,20 +67,11 @@ class CFindPath:
 
     #A* with 4th position indexed
     def findPathAstar2(self,source,destination):
-	print "destination",destination
 	for i in range(0,4):
 	    key = [k for k,v in self.data[destination].items()if v!= "-1" and k != "x" and k!="y" and k!="type"]
-	    #quick fix, if the path length is lesser than two, take the first index itself
-	    '''
-	    if len(key) < 2:
-		index = key[0]
-	    else:
-	    	index = random.randrange(0,len(key))
-	    '''
 	    index = random.randrange(0,len(key))
 	    destination = self.data[destination][key[index]]
 	
-	print "destination",destination
 	path = nx.astar_path(self.G,source,destination,self.heuristics2)
 	if(len(path)>1):
 	    return path[1]
