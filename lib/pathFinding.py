@@ -16,7 +16,7 @@ def config():
                 data = json.load(data_file)
         return data
 '''
-  
+MAX_NODE_LOOKUP = 13  
 class CFindPath:
     
     def __init__(self,data):
@@ -31,30 +31,62 @@ class CFindPath:
             		if  value != "-1" and key!="x" and key!="y" and key!="type":        
                			self.G.add_edge(k,value,weight=1)  
 	self.pos=nx.get_node_attributes(self.G,'pos')
-       	
+
+	#sorry for hard coding but thats how scatter function for the ghost is implemented
+        self.corners = ['92','71','250','229']	
+
 	self.flip = 1
-    
+	self.scatterMode = True    
+
+
+
     #using this to mark nodes as visited
     def getNewScoreDict(self):
 	return	nx.get_node_attributes(self.G,'visited')
 
 
+
     #A* path finding
     def findPathAstar1(self,source,destination):
+	    
+	    #check scatter mode, change the destination and set scatterMode to false again
+	    if (self.scatterMode == True):
+		print "---------------in scatter mode-------------------------------"
+		self.scatterMode = False
+	        destination = self.corners[random.randrange(0,4)]
+	    	
+	
 	    path = nx.astar_path(self.G,source,destination,self.heuristics1)
-	    return path
+	    #return the path's next index other than 0, if not then return 0 itself
+	    if(len(path)>1):
+		    return path[1]
+	    else: 
+		    return path[0]
+
 
     #A* with 4th position indexed
     def findPathAstar2(self,source,destination):
 	print "destination",destination
 	for i in range(0,4):
 	    key = [k for k,v in self.data[destination].items()if v!= "-1" and k != "x" and k!="y" and k!="type"]
+	    #quick fix, if the path length is lesser than two, take the first index itself
+	    '''
+	    if len(key) < 2:
+		index = key[0]
+	    else:
+	    	index = random.randrange(0,len(key))
+	    '''
 	    index = random.randrange(0,len(key))
 	    destination = self.data[destination][key[index]]
 	
 	print "destination",destination
 	path = nx.astar_path(self.G,source,destination,self.heuristics2)
-	return path
+	if(len(path)>1):
+	    return path[1]
+	else: 
+	    return path[0]
+
+
 
     def findPathDijkstra(self,source,destination):
         if self.flip == 1:
@@ -66,6 +98,20 @@ class CFindPath:
 	self.flip *= -1
 	path = nx.dijkstra_path(self.G,source,destination)
 	return path
+
+
+
+    def findPathScattered(self,source,destination):
+	    path = nx.astar_path(self.G,source,destination,self.heuristics1)
+	    if len(path)< MAX_NODE_LOOKUP:
+		#print "recompute the destination as one of the random 4 corners "
+		destination = self.corners[random.randrange(0,4)]
+		#print "destination", destination
+	    	path = nx.astar_path(self.G,source,destination,self.heuristics1)
+	    if(len(path)>1):
+	        return path[1]
+	    else: 
+	        return path[0]
 
     def heuristics1(self,a, b):
         x1, y1 = self.pos[a]
