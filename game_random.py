@@ -243,7 +243,8 @@ class CGame:
 			if self.gameState == GameState.STOPPED:
 				self.dbuffer.fillOff()			
 				rand = random.choice(self.indices)
-				self.dbuffer.setPixel(rand, (255, 255, 255), 1,1 )	
+				self.dbuffer.setPixel(rand, (255, 255, 255), 1, 0.5)	
+				time.sleep(0.03)
 
 		        for event in pygame.event.get():
 			    	if event.type == pygame.QUIT:
