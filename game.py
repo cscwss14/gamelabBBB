@@ -404,6 +404,7 @@ class CGame:
 					
 				#Track the PacMan and Ghost only if the game is RUNNING
 				if self.gameState == GameState.RUNNING:
+					'''
 					#Digipad
 					if event.type == pygame.JOYHATMOTION:
 						#Joystick1 position
@@ -443,7 +444,7 @@ class CGame:
 
                                                 elif(jy_pos1_vertical == 1 and jy_pos1_horizontal == 0 and int(self.data[self.indexPacMan]["up"]) != -1):
                                                         self.direction_of_pacman = "up"
-					
+					'''
 					#Analog
 					if event.type == pygame.JOYAXISMOTION:
 						#print("Axis Moved...")
