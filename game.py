@@ -133,6 +133,7 @@ class CGame:
 		
 		#Sleep Time
 		self.sleepTime = float(self.settings["general"]["sleepTime"])
+		self.ghostSleepTime = float(self.settings["general"]["ghostSleepTime"])
 		
 		#initial colors
 		self.colorAIGhost1 = (int(self.settings["aighost1"]["colorR"]),int(self.settings["aighost1"]["colorG"]),int(self.settings["aighost1"]["colorB"]))  
@@ -273,7 +274,7 @@ class CGame:
 							
 							if self.twoJSPresent == True:
 								attempt = 1
-								max_no_of_attempts = 50 
+								max_no_of_attempts = 5000 
 								found = False
 								self.secondPlayerActive = False
 								while attempt <= max_no_of_attempts and found == False:
@@ -291,11 +292,11 @@ class CGame:
 											break
 									
 									if found == False:
-										if count >=0 and attempt%2.5==0:	
+										if count >=0 and attempt%250==0:	
 		                                					self.dbuffer.setPixel(int(self.countdownList[count]),(255,255,255),0,1 )
 											count = count-1	
 										attempt = attempt + 1
-										time.sleep(0.10)
+										time.sleep(0.001)
 									
 							
 							#Load the array of LEDs to be used for first boot for displaying coins
@@ -714,7 +715,7 @@ class CGame:
 			#release a lock here
 			self.lock.release()
 			#this delay is around half that of the pacman's speed, so as to give it proper opportunities to win
-			time.sleep(0.3)
+			time.sleep(self.ghostSleepTime)
 
 
 	def afterLosing(self):
