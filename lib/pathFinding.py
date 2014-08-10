@@ -53,7 +53,7 @@ class CFindPath:
 	    
 	    #check scatter mode, change the destination and set scatterMode to false again
 	    if (self.scatterMode == True):
-		print "---------------in scatter mode-------------------------------"
+		#print "---------------in scatter mode-------------------------------"
 	        destination = self.corners[random.randrange(0,4)]
 	    	
 	
