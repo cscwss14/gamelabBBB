@@ -48,7 +48,7 @@ class CGame:
 		self.countdownList=[]
 		
 		#setting up the blinking
-		for i in xrange(232,248):
+		for i in xrange(230,250):
 			self.countdownList.append(str(i))
 
 		
@@ -270,9 +270,10 @@ class CGame:
 		                                		self.dbuffer.setPixel(int(j),(255,0,0),1,1 )
 							count = len(self.countdownList)-1 
 							#if second joystick is present, then wait for the second player (ghost) to start the game
+							
 							if self.twoJSPresent == True:
 								attempt = 1
-								max_no_of_attempts = 5 
+								max_no_of_attempts = 20 
 								found = False
 								self.secondPlayerActive = False
 								while attempt <= max_no_of_attempts and found == False:
@@ -288,20 +289,19 @@ class CGame:
 											found = True
 
 											break
-									'''
+									
 									if found == False:
-										if count >=2:	
-											for j in xrange(0,3):
-		                                						self.dbuffer.setPixel(int(self.countdownList[count]),(255,255,255),0,1 )
-												count = count-1	
+										if count >=0:	
+										#	for j in xrange(0,3):
+		                                					self.dbuffer.setPixel(int(self.countdownList[count]),(255,255,255),0,1 )
+											count = count-1	
 										attempt = attempt + 1
-										time.sleep(1)
-									'''
+										time.sleep(0.20)
+									
 							
 							#Load the array of LEDs to be used for first boot for displaying coins
                                                         #It will read all LEDs from JSON file. Depending upon their type, they will have different colors
                                                         self.load_layout()
-
 															
 							#Wait for 2 seconds
 							time.sleep(1)
@@ -482,68 +482,69 @@ class CGame:
 					#print "dict", self.scoreDict
 					if self.scoreDict is None:
 						print "Exception in pacman Running Func\n"
-					if(self.scoreDict[index] == False):
-                                        	self.scoreDict[index] = True
-                                               	self.numOfCoins = self.numOfCoins - 1
+					try:
+						if(self.scoreDict[index] == False):
+                                        		self.scoreDict[index] = True
+                                               		self.numOfCoins = self.numOfCoins - 1
 			
-						#If not already visited, then consume the coin and change the color of the coin
-						self.dbuffer.setPixel(prev_pos, self.colorCollectedCoins, 1, self.intensityCollectedCoins)
+							#If not already visited, then consume the coin and change the color of the coin
+							self.dbuffer.setPixel(prev_pos, self.colorCollectedCoins, 1, self.intensityCollectedCoins)
 			
-						#If the coin is one of the special bean
-						if prev_pos in self.posSpecialBeans:
-							#Play the sound
-							self.eat_fruit.play()
+							#If the coin is one of the special bean
+							if prev_pos in self.posSpecialBeans:
+								#Play the sound
+								self.eat_fruit.play()
 							
-							#If already in fast mode, then stop the timer and start over timer
-							if (self.pacmanSpeed > 1.0 ):
-								#Stop the timer
-								self.timer.cancel()
+								#If already in fast mode, then stop the timer and start over timer
+								if (self.pacmanSpeed > 1.0 ):
+									#Stop the timer
+									self.timer.cancel()
 
-								#Start the new timer
-								self.timer = Timer(10, self.reset_speed)
-								self.timer.start()
-							else:
-								#Start the new timer
-								self.timer = Timer(10, self.reset_speed)
-								self.timer.start()
+									#Start the new timer
+									self.timer = Timer(10, self.reset_speed)
+									self.timer.start()
+								else:
+									#Start the new timer
+									self.timer = Timer(10, self.reset_speed)
+									self.timer.start()
 								
-							#Increase the speed of the pacman
-							self.pacmanSpeed = self.pacmanSpeed + 1
+								#Increase the speed of the pacman
+								self.pacmanSpeed = self.pacmanSpeed + 1
 							
 
-						#Play the sound
-						self.chomp.play()
-					else:
-						#If already visited, then set the color to the color of the coin
-						self.dbuffer.setPixel(prev_pos, self.colorCollectedCoins, 1, self.intensityCollectedCoins)
+							#Play the sound
+							self.chomp.play()
+						else:
+							#If already visited, then set the color to the color of the coin
+							self.dbuffer.setPixel(prev_pos, self.colorCollectedCoins, 1, self.intensityCollectedCoins)
 
 	
 
-					self.posPacMan = int(self.data[self.indexPacMan][self.direction_of_pacman])
-					self.indexPacMan = str(self.posPacMan)
+						self.posPacMan = int(self.data[self.indexPacMan][self.direction_of_pacman])
+						self.indexPacMan = str(self.posPacMan)
 					
 
-					#Set Pac-man's new position
-					self.dbuffer.setPixel(self.posPacMan, self.colorPacMan, 1, self.intensityPacMan)
-
+						#Set Pac-man's new position
+						self.dbuffer.setPixel(self.posPacMan, self.colorPacMan, 1, self.intensityPacMan)
+					except:
+						print "Exception occurred------>\n"
+						print "pacmanRunning function"
 
 				if(self.pacmanWon() == True):
-                                        print "------------Pacman Won------------"
-                                        #Make all leds yellow from down to top
+                                       	print "------------Pacman Won------------"
+                                       	#Make all leds yellow from down to top
 					keys = self.data.keys()
 					for key in keys:
 						self.dbuffer.setPixel(int(key), (255, 255, 0), 1, 0.5)                                       
- 
 					time.sleep(1)
-                                        
+                                      
 					#Turn off all leds
-                                        self.reset_game()
-                                        for key in keys:
-                                        	self.dbuffer.setPixel(int(key), (255, 0, 0) , 0)
-					
+                                       	self.reset_game()
+                                       	for key in keys:
+                               	        	self.dbuffer.setPixel(int(key), (255, 0, 0) , 0)
+						
 					#Change the game state to STOPPED
 					self.gameState = GameState.STOPPED	
-
 				self.afterLosing()
 
 			#if the numOfCoins decreases to lesser than 100 activate the aggressive chase 	
@@ -560,8 +561,6 @@ class CGame:
 				
 			time.sleep(self.sleepTime / self.pacmanSpeed)
 	
-	
-
 
 
 
@@ -715,8 +714,10 @@ class CGame:
 
 			#release a lock here
 			self.lock.release()
-			#This delay should be similar to ledRunning function so as to keep the speed constant
+			#this delay is around half that of the pacman's speed, so as to give it proper opportunities to win
 			time.sleep(0.5)
+
+
 	def afterLosing(self):
 		if(self.pacmanLost() == True):
 			#Play the sound
